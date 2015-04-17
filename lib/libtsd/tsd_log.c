@@ -53,8 +53,9 @@ void
 tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
 {
 	char timestr[32];
+	char buffer[100];
 	time_t now;
-	va_list ap;
+	va_list ap, ap_syslog;
 	int serrno;
 
 	serrno = errno;
@@ -62,16 +63,25 @@ tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
 	strftime(timestr, sizeof timestr, "%Y-%m-%d %H:%M:%S UTC",
 	    gmtime(&now));
 	
-	//fprintf(stderr, "%s [%d] %s:%d %s() ",
-	//    timestr, (int)getpid(), file, line, func);
-	syslog (LOG_NOTICE, "%s [%d] %s:%d %s() ",
-	    timestr, (int)getpid(), file, line, func);
-	
 	va_start(ap, fmt);
-	//vfprintf(stderr, fmt, ap);
-	vsyslog (LOG_NOTICE, fmt, ap);
+	vsprintf(buffer,fmt, ap);
 	va_end(ap);
-	//fprintf(stderr, "\n");
+	
+	fprintf(stderr, "%s [%d] %s:%d %s() %s",
+	    timestr, (int)getpid(), file, line, func, buffer);
+	
+	syslog (LOG_NOTICE, "%s [%d] %s:%d %s() %s",
+	    timestr, (int)getpid(), file, line, func, buffer);
+	
+	//va_start(ap, fmt);
+	
+	//va_copy(ap_syslog,ap);//copy the variable argument list
+	
+	//vfprintf(stderr, fmt, ap);//to the local log
+	//vsyslog (LOG_NOTICE, fmt, ap_syslog);//to the syslog
+	
+	//va_end(ap);
+	fprintf(stderr, "\n");
 	errno = serrno;
 	
 	
@@ -85,7 +95,7 @@ tsd_log_init(void)
 {
 	/*Azab*/
 	setlogmask (LOG_UPTO (LOG_NOTICE));
-	openlog ("tsdfx", LOG_CONS | LOG_PID | LOG_NDELAY | LOG_PERROR, LOG_LOCAL1);
+	openlog ("tsdfx", LOG_CONS | LOG_PID | LOG_NDELAY/* | LOG_PERROR*/, LOG_LOCAL1);
 	
 	
 	setvbuf(stderr, NULL, _IOLBF, 0);
