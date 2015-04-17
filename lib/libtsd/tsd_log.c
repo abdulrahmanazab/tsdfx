@@ -87,6 +87,7 @@ tsd_log_init(void)
 	setlogmask (LOG_UPTO (LOG_NOTICE));
 	openlog ("tsdfx", LOG_CONS | LOG_PID | LOG_NDELAY | LOG_PERROR, LOG_LOCAL1);
 	
+	
 	setvbuf(stderr, NULL, _IOLBF, 0);
 	return (0);
 }
