@@ -53,7 +53,7 @@ void
 tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
 {
 	char timestr[32];
-	char buffer[100];
+	char buffer[256];
 	time_t now;
 	va_list ap, ap_syslog;
 	int serrno;
