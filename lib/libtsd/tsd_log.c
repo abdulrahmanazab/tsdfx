@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <syslog.h>
 
 #include <tsd/log.h>
@@ -50,14 +51,18 @@ int tsd_log_verbose = 0;
  * errno to spare the caller from having to do it.
  */
 void
-tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
+tsd_log(int priority, const char *file, int line, const char *func,
+	const char *fmt, ...)
 {
 	char timestr[32];
-	char buffer[256];
 	time_t now;
 	va_list ap, ap_syslog;
 	int serrno;
 
+	/*Allocate a temp string buffer to avoid overflow*/
+	char *buffer;
+	buffer=(char*)calloc(256,sizeof(char));
+	
 	serrno = errno;
 	time(&now);
 	strftime(timestr, sizeof timestr, "%Y-%m-%d %H:%M:%S UTC",
@@ -69,18 +74,17 @@ tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
 	
 	fprintf(stderr, "%s [%d] %s:%d %s() %s",
 	    timestr, (int)getpid(), file, line, func, buffer);
+	syslog (priority, "%s:%d %s() %s", file, line, func, buffer);
 	
-	syslog (LOG_NOTICE, "%s [%d] %s:%d %s() %s",
-	    timestr, (int)getpid(), file, line, func, buffer);
+	free(buffer);
 	
+	/*Previous idea*/
 	//va_start(ap, fmt);
-	
 	//va_copy(ap_syslog,ap);//copy the variable argument list
-	
 	//vfprintf(stderr, fmt, ap);//to the local log
 	//vsyslog (LOG_NOTICE, fmt, ap_syslog);//to the syslog
-	
 	//va_end(ap);
+	
 	fprintf(stderr, "\n");
 	errno = serrno;
 	
