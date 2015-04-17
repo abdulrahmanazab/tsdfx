@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
+#include <syslog.h>
 
 #include <tsd/log.h>
 
@@ -60,19 +61,32 @@ tsd_log(const char *file, int line, const char *func, const char *fmt, ...)
 	time(&now);
 	strftime(timestr, sizeof timestr, "%Y-%m-%d %H:%M:%S UTC",
 	    gmtime(&now));
-	fprintf(stderr, "%s [%d] %s:%d %s() ",
+	
+	//fprintf(stderr, "%s [%d] %s:%d %s() ",
+	//    timestr, (int)getpid(), file, line, func);
+	syslog (LOG_NOTICE, "%s [%d] %s:%d %s() ",
 	    timestr, (int)getpid(), file, line, func);
+	
 	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
+	//vfprintf(stderr, fmt, ap);
+	vsyslog (LOG_NOTICE, fmt, ap);
 	va_end(ap);
-	fprintf(stderr, "\n");
+	//fprintf(stderr, "\n");
 	errno = serrno;
+	
+	
+
+	
+
 }
 
 int
 tsd_log_init(void)
 {
-
+	/*Azab*/
+	setlogmask (LOG_UPTO (LOG_NOTICE));
+	openlog ("tsdfx", LOG_CONS | LOG_PID | LOG_NDELAY | LOG_PERROR, LOG_LOCAL1);
+	
 	setvbuf(stderr, NULL, _IOLBF, 0);
 	return (0);
 }
