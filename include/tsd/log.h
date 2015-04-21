@@ -27,10 +27,11 @@
  * SUCH DAMAGE.
  */
 
-#include <syslog.h>
 
 #ifndef TSD_LOG_H_INCLUDED
 #define TSD_LOG_H_INCLUDED
+
+#include <syslog.h>
 
 void tsd_log(int, const char *, int, const char *, const char *, ...);
 int tsd_log_init(void);

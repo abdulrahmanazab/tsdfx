@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <syslog.h>
+#include <string.h>
 
 #include <tsd/log.h>
 
@@ -61,7 +62,7 @@ tsd_log(int priority, const char *file, int line, const char *func,
 
 	/*Allocate a temp string buffer to avoid overflow*/
 	char *buffer;
-	buffer=(char*)calloc(256,sizeof(char));
+	buffer=(char*)calloc(128 + sizeof(file),sizeof(char));
 	
 	serrno = errno;
 	time(&now);
@@ -72,7 +73,7 @@ tsd_log(int priority, const char *file, int line, const char *func,
 	vsprintf(buffer,fmt, ap);
 	va_end(ap);
 	
-	fprintf(stderr, "%s [%d] %s:%d %s() %s",
+	fprintf(stderr, "%s [%d] %s:%d %s() %s\n",
 	    timestr, (int)getpid(), file, line, func, buffer);
 	syslog (priority, "%s:%d %s() %s", file, line, func, buffer);
 	
@@ -85,7 +86,7 @@ tsd_log(int priority, const char *file, int line, const char *func,
 	//vsyslog (LOG_NOTICE, fmt, ap_syslog);//to the syslog
 	//va_end(ap);
 	
-	fprintf(stderr, "\n");
+	//fprintf(stderr, "\n");
 	errno = serrno;
 	
 	
