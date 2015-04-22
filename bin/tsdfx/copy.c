@@ -422,6 +422,7 @@ tsdfx_copy_wrap(const char *srcdir, const char *dstdir, const char *files)
 			 * copier child for a file that's already been
 			 * copied.
 			 * XXX hack
+			 * Azab: Delete tasks should be initiated here
 			 */
 			srcst.st_mode &= ~TSDFX_COPY_UMASK;
 			if (S_ISREG(srcst.st_mode) &&

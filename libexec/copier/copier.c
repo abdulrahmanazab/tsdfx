@@ -392,6 +392,18 @@ tsdfx_log_complete(const struct copyfile *src, const struct copyfile *dst)
 	    src->name, dst->name, (size_t)dst->st.st_size, hex,
 	    (unsigned long)dst->tve.tv_sec,
 	    (unsigned long)dst->tve.tv_usec / 1000);
+
+	/* //Deletion code (to be fixed in the scanner):   
+	int status = remove(src->name);
+ 
+   	if( status == 0 )
+      		NOTICE("%s deleted successfully.",src->name);
+   	else
+  	 {
+      		NOTICE("Unable to delete %s",src->name);
+      		
+  	 }
+  	 */
 }
 
 /* read from both files, compare and write if necessary */
