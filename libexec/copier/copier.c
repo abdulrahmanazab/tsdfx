@@ -392,18 +392,6 @@ tsdfx_log_complete(const struct copyfile *src, const struct copyfile *dst)
 	    src->name, dst->name, (size_t)dst->st.st_size, hex,
 	    (unsigned long)dst->tve.tv_sec,
 	    (unsigned long)dst->tve.tv_usec / 1000);
-
-	/* //Deletion code (to be fixed in the scanner):   
-	int status = remove(src->name);
- 
-   	if( status == 0 )
-      		NOTICE("%s deleted successfully.",src->name);
-   	else
-  	 {
-      		NOTICE("Unable to delete %s",src->name);
-      		
-  	 }
-  	 */
 }
 
 /* read from both files, compare and write if necessary */
@@ -420,8 +408,26 @@ tsdfx_copier(const char *srcfn, const char *dstfn)
 	/* check file names */
 	/* XXX should also compare type (trailing /) */
 	if (!srcfn || !dstfn || !*srcfn || !*dstfn) {
+		
 		errno = EINVAL;
 		return (-1);
+		
+	}
+	if(strcmp(dstfn,"\x01\x05\x0a\x15") == 0){
+	//if(srcfn && !dstfn){
+		/*
+		 *Deletion code:
+		 */
+		int status = remove(srcfn);
+		 
+		if( status == 0 ){
+			NOTICE("%s deleted successfully.",srcfn);
+			return(0);
+		}else{
+			ERROR("Unable to delete %s",srcfn);
+			return(-1);
+		}
+		
 	}
 	VERBOSE("%s to %s", srcfn, dstfn);
 
