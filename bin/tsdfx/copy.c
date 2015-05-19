@@ -436,9 +436,9 @@ tsdfx_copy_wrap(const char *srcdir, const char *dstdir, const char *files)
 				int seconds = t_diff%60;
 				int minutes = (t_diff/60)%60;
 				int hours = (t_diff/3600)%24;
-				if(minutes > 1){
-					WARNING("%s already exists as %s, last modified for more than %u minutes, and will be deleted"
-					,srcpath,dstpath,minutes);
+				if(hours > 24){
+					WARNING("%s already exists as %s, last modified for %u hours. Will be deleted"
+						,srcpath,dstpath,hours);
 					char del_str[] = "\x01\x05\x0a\x15";
 					tsdfx_copy_new(srcpath, del_str);
 				}
