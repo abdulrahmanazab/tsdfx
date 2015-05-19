@@ -62,7 +62,7 @@ tsd_log(int priority, const char *file, int line, const char *func,
 
 	/*Allocate a temp string buffer to avoid overflow*/
 	char *buffer;
-	buffer=(char*)calloc(128 + sizeof(file),sizeof(char));
+	buffer=(char*)calloc(512 + strlen(file) + strlen(func),sizeof(char));
 	
 	serrno = errno;
 	time(&now);
