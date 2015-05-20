@@ -31,6 +31,8 @@
 # include "config.h"
 #endif
 
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -60,21 +62,22 @@ tsd_log(int priority, const char *file, int line, const char *func,
 	va_list ap, ap_syslog;
 	int serrno;
 
-	/*Allocate a temp string buffer to avoid overflow*/
-	char *buffer;
-	buffer=(char*)calloc(512 + strlen(file) + strlen(func),sizeof(char));
-	
 	serrno = errno;
 	time(&now);
 	strftime(timestr, sizeof timestr, "%Y-%m-%d %H:%M:%S UTC",
 	    gmtime(&now));
 	
+	/*Allocate a temp string buffer to avoid overflow*/
+	char *buffer;
+	
 	va_start(ap, fmt);
-	vsprintf(buffer,fmt, ap);
+	//buffer=(char*)calloc(512 + strlen(file) + strlen(func),sizeof(char));	
+	//vsprintf(buffer,fmt, ap);
+	vasprintf(&buffer,fmt, ap);
 	va_end(ap);
 	
-	fprintf(stderr, "%s [%d] %s:%d %s() %s\n",
-	    timestr, (int)getpid(), file, line, func, buffer);
+	fprintf(stderr, "%s [%d] %s:%d %s() %s \n",
+	    timestr, (int)getpid(), file, line, func, buffer, strlen(buffer));
 	syslog (priority, "%s:%d %s() %s", file, line, func, buffer);
 	
 	free(buffer);
